@@ -17,17 +17,17 @@ package
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
 	
-	//[SWF(width='300', height='250', backgroundColor='#000000', frameRate='30')]
+	//[SWF(width='800', height='600', backgroundColor='#000000', frameRate='30')]
 	[SWF(widthPercent='100%', heightPercent='100%', backgroundColor='#FFFFFF', frameRate='30')]
 	
-	public class SplashClassic300x250 extends SplashClassic
+	public class SplashClassicMain extends SplashClassic
 	{
 		private var _dataxml:String;
 		private var _intervalDuration:Number;
 		private var _autoplayTime:Number;
 		
-			
-		public function SplashClassic300x250()
+		
+		public function SplashClassicMain()
 		{
 			if (Capabilities.playerType == "External") 
 			{

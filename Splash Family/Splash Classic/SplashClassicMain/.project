@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>SplashClassic300x250</name>
+	<name>SplashClassicMain</name>
 	<comment></comment>
 	<projects>
-		<project>SplashClassic</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
