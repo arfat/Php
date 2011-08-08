@@ -46,6 +46,8 @@ package com.glam
 		private var fsMc:MovieClip
 		private var rtaMc:MovieClip
 		private var ltaMc:MovieClip
+		private var preloadMc:MovieClip;
+		private var preloadSp:Sprite;
 		private var firstFlg:Boolean = false;
 		private var closeFlg:Boolean = false;
 		private var setExpFlg:Boolean = false;
@@ -84,6 +86,8 @@ package com.glam
 			_mymodel.currentSp = baseSp;
 			_mymodel.expd = _expd;
 			_mymodel.unexpd = _unexpd;
+
+			// Assinging timer duration
 			_intervalDuration = intervalDuration;
 			_autoplayTime = autoplayTime;
 		
@@ -124,7 +128,12 @@ package com.glam
 			rtaMc.name = "rtaMc"
 			_expd.addChild(rtaMc);	
 
-			
+			//preloadMc in expanded
+			preloadMc = new MovieClip();
+			preloadMc.name = "preloadMc";
+			_expd.addChild(preloadMc);			
+			_mymodel.preloadMc= preloadMc;
+			_mymodel.preloadMc.visible = false;
 
 			// thumbnail MovieClip in Expanded
 			thumbMc = new MovieClip();
@@ -138,6 +147,7 @@ package com.glam
 			loader.addEventListener(Event.COMPLETE, xmlprocessing);
 			loader.load(request);			
 			stage.addEventListener(Event.RESIZE, setScreen);
+			stage.addEventListener(Event.FULLSCREEN, onFullscreen);
 			
 			// Expanded Timer initialize
 			expTimer = new Timer(_intervalDuration,1);
@@ -197,7 +207,7 @@ package com.glam
 					}
 					dataObject = new Object();
 					dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.assets.asset[i].@src);
-					dataObject.imgname = "unexpadedmc";
+					dataObject.mcinsname = "unexpadedmc";
 					dataObject.loaderMc = _mymodel.unexpd;
 					dataObject.posX  =0;
 					dataObject.posY = 0;
@@ -224,7 +234,7 @@ package com.glam
 					}
 					dataObject = new Object();
 					dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.assets.asset[i].@src);
-					dataObject.imgname = "timermc";
+					dataObject.mcinsname = "timermc";
 					dataObject.loaderMc = _mymodel.unexpd;
 					dataObject.posX  =0;
 					dataObject.posY = 0;
@@ -304,7 +314,7 @@ package com.glam
 							}
 							dataObject = new Object();
 							dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.assets.asset[i].@src);
-							dataObject.imgname = "headermc";
+							dataObject.mcinsname = "headermc";
 							dataObject.loaderMc = headerMc;
 							dataObject.posX  =0;
 							dataObject.posY = 0;
@@ -314,7 +324,6 @@ package com.glam
 							break;
 						}
 					}
-					
 					// bgMc
 					dataObject = new Object();
 					if(_mymodel.xmlObj.data.interfaceSettings.theme.@type== "swf")
@@ -333,11 +342,12 @@ package com.glam
 						}
 						dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.content.@src);
 					}
-					dataObject.imgname = "bgmc";
+					dataObject.mcinsname = "bgmc";
 					dataObject.loaderMc = bgMc;
 					dataObject.posX  =0;
 					dataObject.posY = 0;
 					myloader.loadnit(dataObject);	
+					
 					
 					//closeMc
 					dataObject = new Object();
@@ -357,7 +367,7 @@ package com.glam
 						}
 						dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.content.@src);
 					}
-					dataObject.imgname = "closemc";
+					dataObject.mcinsname = "closemc";
 					dataObject.loaderMc = closeMc;
 					dataObject.posX  =_mymodel.stagewd-45;
 					dataObject.posY = 5;
@@ -382,7 +392,7 @@ package com.glam
 						}
 						dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.content.@src);
 					}
-					dataObject.imgname = "flscreenmc";
+					dataObject.mcinsname = "flscreenmc";
 					dataObject.loaderMc = fsMc;
 					dataObject.posX  =_mymodel.stagewd-80;
 					dataObject.posY = 5;
@@ -407,7 +417,7 @@ package com.glam
 						}
 						dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.content.@src);
 					}
-					dataObject.imgname = "leftarrowmc";
+					dataObject.mcinsname = "leftarrowmc";
 					dataObject.loaderMc = ltaMc;
 					dataObject.posX  =15;
 					dataObject.posY = _mymodel.stageht/2;
@@ -433,13 +443,37 @@ package com.glam
 						}
 						dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.content.@src);
 					}		
-					dataObject.imgname = "rightarrowmc";
+					dataObject.mcinsname = "rightarrowmc";
 					dataObject.loaderMc = rtaMc;
 					dataObject.posX  =_mymodel.stagewd-50;
 					dataObject.posY = _mymodel.stageht/2;
 					myloader.loadnit(dataObject);
 					rtaMc.addEventListener(MouseEvent.CLICK,rtaClicked);
 				}
+				
+				// preloadMc
+				dataObject = new Object();
+				if(_mymodel.xmlObj.data.interfaceSettings.theme.@type== "swf")
+				{
+					myloader =  new swfLoader();
+					dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.@name+"_preloader.swf");			
+				}else if(_mymodel.xmlObj.data.interfaceSettings.theme.@type == "image"){
+					myloader =  new imgLoader();
+					dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.@name+"_preloader.gif");
+				}else{
+					if(_mymodel.xmlObj.data.interfaceSettings.theme.content.@type== "swf")
+					{
+						myloader =  new swfLoader();
+					}else {
+						myloader =  new imgLoader();
+					}
+					dataObject.url =String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.interfaceSettings.theme.content.@src);
+				}
+				dataObject.mcinsname = "preloadermc";
+				dataObject.loaderMc = preloadMc;
+				dataObject.posX  =0;
+				dataObject.posY = 0;
+				myloader.loadnit(dataObject);	
 		}
 		
 		//Left Arrow Clicked
@@ -487,6 +521,7 @@ package com.glam
 					break;
 				}
 			}
+			
 			loadMainContainer(dataObject);
 		}
 
@@ -516,7 +551,7 @@ package com.glam
 			_mymodel.currentTypeOfObj = dataObj.type;
 			
 			dataObject.src =dataObj.src;
-			dataObject.imgname = "mainmc";
+			dataObject.mcinsname = "mainmc";
 			dataObject.loaderMc = mainContentMc;
 			dataObject.posX  = 0;
 			dataObject.posY = 0;
@@ -630,7 +665,7 @@ package com.glam
 					var dataObject:Object = new Object();
 					dataObject.src = String(_mymodel.xmlObj.data.slides.slide[_cnt].@src);
 					dataObject.url = url;
-					dataObject.imgname = "dataContainer"+_cnt+"mc";
+					dataObject.mcinsname = "dataContainer"+_cnt+"mc";
 					dataObject.loaderMc = thumbMc;
 					dataObject.posX  =posx;
 					dataObject.posY = posy;
@@ -659,7 +694,7 @@ package com.glam
 				dataObject.no = 0;
 				dataObject.url = String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.slides.slide[0].@src);
 				dataObject.src = String(_mymodel.xmlObj.data.slides.slide[0].@src);
-				dataObject.imgname = "mainmc";
+				dataObject.mcinsname = "mainmc";
 				dataObject.loaderMc = mainContentMc;
 				dataObject.posX  = 0;
 				dataObject.posY = 0;
@@ -695,7 +730,7 @@ package com.glam
 			dataObject.no = 0;
 			dataObject.url = String(_mymodel.xmlObj.data.global.imagePath)+String(_mymodel.xmlObj.data.slides.slide[0].@src);
 			dataObject.src = String(_mymodel.xmlObj.data.slides.slide[0].@src);
-			dataObject.imgname = "mainmc";
+			dataObject.mcinsname = "mainmc";
 			dataObject.loaderMc = mainContentMc;
 			dataObject.posX  = 0;
 			dataObject.posY = 0;
@@ -758,6 +793,11 @@ package com.glam
 				//applying stagewidth and stage height in to model class
 				_mymodel.stagewd = stage.stageWidth;
 				_mymodel.stageht = stage.stageHeight;	
+				
+				// preloadMc position 
+				_mymodel.preloadMc.x = _mymodel.stagewd/2 - _mymodel.preloadMc.width/2;
+				_mymodel.preloadMc.y = _mymodel.stageht/2 - _mymodel.preloadMc.height/2;
+				
 			}catch(e:Error){	
 			}
 
@@ -815,7 +855,6 @@ package com.glam
 				}
 				mainContentMc.getChildAt(0).x = stage.stageWidth/2 - 	mainContentMc.width/2;
 				mainContentMc.getChildAt(0).y =headerMc.y+headerMc.height+5;
-				
 			}catch(e:Error){
 			}
 		}
@@ -827,6 +866,24 @@ package com.glam
 			mainContentMc.getChildAt(0).y =headerMc.y+headerMc.height+5;			
 		}
 		
+		
+		private function onFullscreen(e:Event):void
+		{
+			if(stage.displayState == StageDisplayState.NORMAL)
+			{
+				// Require to set video content position after Stage Fullscreen to Normal position
+				if(_mymodel.currentTypeOfObj == "video")
+				{
+					stage.addEventListener(Event.ENTER_FRAME,onEnterFrame);
+					fsTimer.start();
+				}
+				Metrics.track("fullscreen", "OFF");
+				Metrics.stopTimer("fullscreen");
+			}else{
+				Metrics.track("fullscreen", "ON");
+				Metrics.startTimer("fullscreen");
+			}
+		}
 		// Fullscreen On/Off
 		private function setFullScreenOnOff(fsButtonClicked:Boolean = true,e:MouseEvent = null):void
 		{
@@ -836,18 +893,10 @@ package com.glam
 			}	
 			if(stage.displayState == StageDisplayState.NORMAL)
 			{
-				Metrics.track("fullscreen", "ON");
 				stage.displayState = StageDisplayState.FULL_SCREEN;
 			}
 			else
 			{	
-				// Require to set video content position after Stage Fullscreen to Normal position
-				if(_mymodel.currentTypeOfObj == "video")
-				{
-					stage.addEventListener(Event.ENTER_FRAME,onEnterFrame);
-					fsTimer.start();
-				}
-				Metrics.track("fullscreen", "OFF");
 				stage.displayState = StageDisplayState.NORMAL;
 			}
 		}

@@ -12,10 +12,11 @@ package com.glam.templates
 	import flash.display.Bitmap;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 	import flash.display.Stage;
 	import flash.events.*;
 	import flash.net.*;
-	import flash.system.LoaderContext;	
+	import flash.system.LoaderContext;
 	
 	public class swfLoader extends MovieClip
 	{
@@ -27,7 +28,7 @@ package com.glam.templates
 		private var tmpurl:String;
 		private var mainMcName:String;
 		public var myMc:MovieClip;
-		
+
 		public function swfLoader():void
 		{
 			_mymodel = Model.getInstance();
@@ -47,13 +48,17 @@ package com.glam.templates
 			_context.checkPolicyFile = true;
 			configureListeners(loader.contentLoaderInfo);
 			_req = new URLRequest(dataObject.url);
-			myMc.name = dataObject.imgname;
+			myMc.name = dataObject.mcinsname;
 			myMc.x = dataObject.posX;
 			myMc.y = dataObject.posY;
 			myMc.dataObj = dataObject; 
 			dataObject.loaderMc.addChild(myMc);
+			if(mainMcName == "mainContentMc")
+			{
+				_mymodel.preloadMc.visible = true;
+			}
 			myMc.addChild(loader);
-			loader.load(_req,_context);	
+			loader.load(_req,_context);
 		}
 		
 		private function configureListeners(dispatcher:IEventDispatcher):void {
@@ -63,13 +68,9 @@ package com.glam.templates
 		}
 		
 		private function completeHandler(event:Event):void {
-			if(_swfname == "bgmc")
-			{
-				event.target.width = _mymodel.stagewd;
-				event.target.height = _mymodel.stageht;
-			}
 			if(mainMcName == "mainContentMc")
 			{
+				_mymodel.preloadMc.visible = false;
 				myMc.alpha = 0;
 				TweenLite.to(myMc,0.5, {alpha:1, ease:Back.easeIn});
 				dispatchEvent(new Event("mainContentloadComplete"));

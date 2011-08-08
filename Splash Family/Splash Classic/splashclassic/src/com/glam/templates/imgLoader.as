@@ -6,16 +6,17 @@ package com.glam.templates
 	 * 
 	 */	
 	import com.glam.model.Model;
+	import com.greensock.*;
+	import com.greensock.easing.*;
 	
 	import flash.display.Bitmap;
 	import flash.display.Loader;
 	import flash.display.MovieClip;
+	import flash.display.Sprite;
 	import flash.events.*;
 	import flash.events.EventDispatcher;
 	import flash.net.*;
 	import flash.system.LoaderContext;
-	import com.greensock.*;
-	import com.greensock.easing.*;	
 	
 	public class imgLoader extends MovieClip
 	{
@@ -47,11 +48,15 @@ package com.glam.templates
 			_context.checkPolicyFile = true;
 			configureListeners(loader.contentLoaderInfo);
 			_req = new URLRequest(dataObject.url);
-			myMc.name = dataObject.imgname;
+			myMc.name = dataObject.mcinsname;
 			myMc.x = dataObject.posX;
 			myMc.y = dataObject.posY;
 			myMc.dataObj = dataObject; 
 			dataObject.loaderMc.addChild(myMc);
+			if(mainMcName == "mainContentMc")
+			{			
+				_mymodel.preloadMc.visible = true;
+			}
 			myMc.addChild(loader);
 			loader.load(_req,_context);	
 			
@@ -63,11 +68,10 @@ package com.glam.templates
 			dispatcher.addEventListener(ProgressEvent.PROGRESS, progressHandler);
 		}
 		
-		private function completeHandler(event:Event):void {			
+		private function completeHandler(event:Event):void {		
 			imageData = new Bitmap();
 			imageData = event.target.content as Bitmap;
 			imageData.smoothing = true;
-
 
 			if (tmpurl.lastIndexOf("_th") != -1)
 			{
@@ -77,6 +81,7 @@ package com.glam.templates
 			}
 			if(mainMcName == "mainContentMc")
 			{
+				_mymodel.preloadMc.visible = false;
 				myMc.alpha = 0;
 				TweenLite.to(myMc,0.5, {alpha:1, ease:Back.easeIn});
 				dispatchEvent(new Event("mainContentloadComplete"));

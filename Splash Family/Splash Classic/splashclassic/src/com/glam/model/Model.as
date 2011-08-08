@@ -30,6 +30,7 @@ package com.glam.model
 		private var _currentTypeOfObj:String;
 		private var _apFlg:Boolean;
 		private var _apTimer:Timer;
+		private var _preloadMc:MovieClip;
 		
 		public function Model(obj:MyIntClass) 
 		{
@@ -57,6 +58,16 @@ package com.glam.model
 		public function get currentSp():Sprite
 		{
 			return _currentSp;
+		}
+		
+		//stores preloader Class
+		public function set preloadMc(value:MovieClip):void
+		{
+			_preloadMc = value;
+		}
+		public function get preloadMc():MovieClip
+		{
+			return _preloadMc;
 		}
 		
 		//stores current object type in main container
